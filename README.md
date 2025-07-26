@@ -2,12 +2,15 @@
  * @Author       : luyz
  * @Date         : 2025-07-26 20:49:53
  * @LastEditors  : luyz
- * @LastEditTime : 2025-07-26 20:50:08
- * @FilePath     : README.md
+ * @LastEditTime : 2025-07-26 20:57:34
+ * @FilePath     : /luyz/project/CustomizedAnalysis/CustomizedAnalysis.12.20250726_YASbilibili/README.md
  * @Description  : 项目Readme
  * Copyright (c) 2023 by LuYanzhuan lyanzhuan@gmail.com, All Rights Reserved.
  * Copyright (c) 2025 by luyz && luyz@aptbiotech.com, All Rights Reserved. 
 -->
+
+# B 站数据采集
+# MetricsCollector-Bilibili
 
 ## 📌 项目介绍 (Project Introduction)
 
@@ -46,11 +49,12 @@ It is intended for analysts, content observers, or platform operators who need t
 ---
 
 ## 🔓 开源理念与许可 (Open Source Philosophy & License)
-
+### 开放协作，驱动创新
 本项目遵循科学共享的理念，作者希望通过开源工具促进数据协作与知识传播。项目采用 GNU 通用公共许可证 第三版（GNU GPLv3）授权发布，任何人可自由使用、修改、分发代码，但需保持相同协议。
 
 ---
 
+### Collaboration equals innovation
 This project adheres to the principles of scientific openness. The author aims to promote data collaboration and knowledge sharing through this open-source tool. The project is released under the GNU General Public License v3.0 (GPLv3), allowing free use, modification, and distribution, provided that derivative works comply with the same license.
 
 ---
