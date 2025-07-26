@@ -2,8 +2,8 @@
  * @Author       : luyz
  * @Date         : 2025-07-26 20:49:53
  * @LastEditors  : luyz
- * @LastEditTime : 2025-07-26 20:59:34
- * @FilePath     : /luyz/project/CustomizedAnalysis/CustomizedAnalysis.12.20250726_YASbilibili/README.md
+ * @LastEditTime : 2025-07-26 21:21:15
+ * @FilePath     : README.md
  * @Description  : 项目Readme
  * Copyright (c) 2023 by LuYanzhuan lyanzhuan@gmail.com, All Rights Reserved.
  * Copyright (c) 2025 by luyz && luyz@aptbiotech.com, All Rights Reserved. 
@@ -22,10 +22,15 @@
 - 特定分区下的 UP 主视频信息
 
 本项目旨在帮助内容观察者、数据分析人员或平台运营者掌握热门趋势并高效追踪创作者动态。
+> **声明：**
+> 1. **请勿滥用，本项目仅用于学习！请勿滥用，本项目仅用于学习！请勿滥用，本项目仅用于学习！**
+> 2. 利用本项目提供的接口、文档等造成不良影响及后果与本人无关
+> 3. 由于本项目的特殊性，**不得商用！** 请大家自觉，并可能随时停止开发或删档
+> 4. 本项目为开源项目，不接受任何形式的催单和索取行为，更不容许存在付费内容
 
 ---
 
-This project is designed to collect video metadata from specific Bilibili content partitions, including time-based selections and uploader (UP 主) information. It compiles and analyzes trending video data, enabling automatic Feishu (Lark) reporting of:
+This project is designed to collect video metadata from specific Bilibili content partitions, including time-based selections and uploader information. It compiles and analyzes trending video data, enabling automatic Lark reporting of:
 
 - Daily hot videos (Top Daily)
 - Weekly hot videos (Top Weekly)
@@ -35,15 +40,31 @@ This project is designed to collect video metadata from specific Bilibili conten
 
 It is intended for analysts, content observers, or platform operators who need to monitor video trends and track creator performance efficiently.
 
+
+> ⚠️ **Disclaimer:**
+> 1. **This project is for educational and research purposes only. Do not abuse it! Do not abuse it! Do not abuse it!**
+> 2. The author is not responsible for any negative impact or consequences caused by the use of this project, its interfaces, or related documentation.
+> 3. Due to the sensitive nature of this project, **commercial use is strictly prohibited!** Please act responsibly. The author reserves the right to discontinue development or remove the repository at any time.
+> 4. This is an open-source project. No requests for feature delivery, urgency, or paid content translation will be accepted.
+
 ---
 
 ## 📚 引用资料 (References)
 
-- 哔哩哔哩 API 文档（非官方）：  
-  [https://socialsisteryi.github.io/bilibili-API-collect/docs/video_ranking/dynamic.html](https://socialsisteryi.github.io/bilibili-API-collect/docs/video_ranking/dynamic.html)
+- 哔哩哔哩 野生 API 文档（非官方）：  
+  [https://socialsisteryi.github.io/bilibili-API-collect/](https://socialsisteryi.github.io/bilibili-API-collect/)
 
 - 飞书开放平台 Sheets 接口文档（写入多个单元格）：  
   [https://open.feishu.cn/document/server-docs/docs/sheets-v3/data-operation/write-data-to-multiple-ranges](https://open.feishu.cn/document/server-docs/docs/sheets-v3/data-operation/write-data-to-multiple-ranges)
+
+---
+
+- Unofficial Bilibili Wild API Documentation：  
+  [https://socialsisteryi.github.io/bilibili-API-collect/](https://socialsisteryi.github.io/bilibili-API-collect/)
+
+- 飞书开放平台 Sheets 接口文档（写入多个单元格）：  
+  [https://open.feishu.cn/document/server-docs/docs/sheets-v3/data-operation/write-data-to-multiple-ranges](https://open.feishu.cn/document/server-docs/docs/sheets-v3/data-operation/write-data-to-multiple-ranges)
+
 
 ---
 
