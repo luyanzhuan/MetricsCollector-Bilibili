@@ -2,15 +2,14 @@
  * @Author       : luyz
  * @Date         : 2025-07-26 20:49:53
  * @LastEditors  : luyz
- * @LastEditTime : 2025-07-26 20:57:34
+ * @LastEditTime : 2025-07-26 20:59:34
  * @FilePath     : /luyz/project/CustomizedAnalysis/CustomizedAnalysis.12.20250726_YASbilibili/README.md
  * @Description  : 项目Readme
  * Copyright (c) 2023 by LuYanzhuan lyanzhuan@gmail.com, All Rights Reserved.
  * Copyright (c) 2025 by luyz && luyz@aptbiotech.com, All Rights Reserved. 
 -->
 
-# B 站数据采集
-# MetricsCollector-Bilibili
+# B 站数据采集 (MetricsCollector-Bilibili)
 
 ## 📌 项目介绍 (Project Introduction)
 
