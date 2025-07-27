@@ -5,8 +5,7 @@
  * @LastEditTime : 2025-07-26 21:21:15
  * @FilePath     : README.md
  * @Description  : 项目Readme
- * Copyright (c) 2023 by LuYanzhuan lyanzhuan@gmail.com, All Rights Reserved.
- * Copyright (c) 2025 by luyz && luyz@aptbiotech.com, All Rights Reserved. 
+ * Copyright (c) 2025 by LuYanzhuan lyanzhuan@gmail.com, All Rights Reserved.
 -->
 
 # B 站数据采集 (MetricsCollector-Bilibili)
