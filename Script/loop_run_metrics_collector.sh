@@ -24,7 +24,7 @@ echo "最大页数：$max_pages"
 echo "间隔时间：$interval 秒"
 
 # 锁文件路径
-lockfile="/tmp/metrics_collector.lock"
+lockfile="/tmp/metrics_collector_$region_id.lock"
 
 # 尝试获取非阻塞锁；若已有运行中的实例则退出
 exec 200>"$lockfile"

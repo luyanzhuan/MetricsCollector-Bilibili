@@ -4,7 +4,7 @@
 Author       : luyz
 Date         : 2025-07-26 22:52:28
 LastEditors  : luyz
-LastEditTime : 2025-07-29 13:51:27
+LastEditTime : 2025-07-29 21:08:23
 Description  : 
 Copyright (c) 2025 by LuYanzhuan lyanzhuan@gmail.com, All Rights Reserved.
 '''
@@ -112,6 +112,7 @@ def init_video_type_db(db_path):
             fetch_timestamp INTEGER,
             region_id INTEGER,
             type TEXT,
+            follower INTEGER,
             PRIMARY KEY (bvid, type)  -- 联合主键，保证每个视频每种类型唯一
         )
     '''
@@ -149,6 +150,14 @@ def random_sleep(min_seconds=1, max_seconds=3):
     print(f"⏳ 等待 {delay:.2f} 秒防封...")
     time.sleep(delay)
 
+# 定义 User-Agent 列表（可扩充）
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15",
+    "Mozilla/5.0 (Windows NT 10.0; WOW64) Gecko/20100101 Firefox/91.0",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/104.0.0.0 Safari/537.36"
+]
+
 # 根据API获取视频数据并保存到数据库
 # 获取分区视频最新投稿列表
 def get_bilibili_newlist(rid, pn=1, ps=5):
@@ -181,14 +190,6 @@ def get_bilibili_newlist(rid, pn=1, ps=5):
             "Origin": "https://www.bilibili.com",
             "Accept": "application/json"
         }
-
-        # 定义 User-Agent 列表（可扩充）
-        USER_AGENTS = [
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15",
-            "Mozilla/5.0 (Windows NT 10.0; WOW64) Gecko/20100101 Firefox/91.0",
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/104.0.0.0 Safari/537.36"
-        ]
 
         try:
             response = requests.get(url, params=params, headers=headers, timeout=10)
@@ -244,6 +245,61 @@ def get_bilibili_newlist(rid, pn=1, ps=5):
     } for v in archives])
 
     return df
+
+# 获取 UP 主的粉丝数
+def get_up_followers(up_id):
+    # Step 1: 请求基本参数
+    url = "https://api.bilibili.com/x/relation/stat"
+    params = {"vmid": up_id}
+
+    # Step 2: 重试设置（带指数退避）
+    max_retries = 3
+    wait_time = 1
+    max_wait = 10
+    followers_count = None
+
+    for attempt in range(1, max_retries + 1):
+        # Step 3: 伪装请求头
+        headers = {
+            "User-Agent": random.choice(USER_AGENTS),
+            "Referer": "https://www.bilibili.com",
+            "Origin": "https://www.bilibili.com",
+            "Accept": "application/json"
+        }
+
+        try:
+            response = requests.get(url, params=params, headers=headers, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+            break  # 请求成功，跳出重试循环
+        except requests.exceptions.Timeout:
+            if attempt < max_retries:
+                sleep_sec = min(wait_time, max_wait)
+                print(f"⚠️ 请求超时，第 {attempt} 次，等待 {sleep_sec}s 后重试...")
+                time.sleep(sleep_sec)
+                wait_time *= 2  # 指数退避
+            else:
+                print("❌ 请求超时，已放弃")
+                return None
+        except requests.RequestException as e:
+            print(f"❌ 请求失败: {e}")
+            return None
+
+    # Step 5: 响应校验
+    if data is None or data.get("code") != 0:
+        err_code = data.get("code") if data else "None"
+        err_msg = data.get("message") if data else "No response"
+        print(f"⚠️ API 返回错误: code={err_code} message={err_msg}")
+        return None
+
+    # Step 6: 提取视频数据并转换为 DataFrame
+    if 'data' in data and 'follower' in data['data']:
+        followers_count = data['data']['follower']
+    else:
+        print("📭 未获取到粉丝数")
+        return None
+
+    return followers_count
 
 # 获取视频的时间类型（1天、3天、1周、1月、3月、1年）
 def get_video_type(pub_timestamp, fetch_timestamp):
@@ -308,19 +364,20 @@ def save_video_type_to_db(video_data, db_path):
     for video in video_data:
         try:
             video_type = get_video_type(video['发布时间戳'], video['获取时间戳'])
+            followers_count = get_up_followers(video['UP主ID'])
 
             if video_type:
                 cursor.execute('''
                     INSERT OR REPLACE INTO video_types (
                         bvid, title, up_name, up_id, pub_timestamp, view, like, reply, danmaku, 
-                        favorite, coin, share, description, cover, duration, tag, video_url, fetch_timestamp, region_id, type
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        favorite, coin, share, description, cover, duration, tag, video_url, fetch_timestamp, region_id, type, follower
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     video['BVID'], video['标题'], video['UP主'], video['UP主ID'], video['发布时间戳'], 
                     video['播放数'], video['点赞数'], video['评论数'], video['弹幕数'],
                     video['收藏数'], video['投币数'], video['分享数'], video['简介'], 
                     video['封面'], video['时长'], video['标签'], video['视频链接'],
-                    video['获取时间戳'], video['分区ID'], video_type
+                    video['获取时间戳'], video['分区ID'], video_type,
                 ))
         except Exception as e:
             print(f"❌ 插入数据时出错: {e}")
