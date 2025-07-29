@@ -4,7 +4,7 @@
 Author       : luyz
 Date         : 2025-07-26 22:52:28
 LastEditors  : luyz
-LastEditTime : 2025-07-27 09:31:28
+LastEditTime : 2025-07-29 13:51:27
 Description  : 
 Copyright (c) 2025 by LuYanzhuan lyanzhuan@gmail.com, All Rights Reserved.
 '''
@@ -149,84 +149,180 @@ def random_sleep(min_seconds=1, max_seconds=3):
     print(f"⏳ 等待 {delay:.2f} 秒防封...")
     time.sleep(delay)
 
-# 根据API获取视频数据并保存到数据库
-# 获取分区视频最新投稿列表
-def get_bilibili_newlist(
-    rid,
-    pn=1,
-    ps=5
-):
+# # 根据API获取视频数据并保存到数据库
+# # 获取分区视频最新投稿列表
+# def get_bilibili_newlist(
+#     rid,
+#     pn=1,
+#     ps=5
+# ):
+#     """
+#     调用 Bilibili API 获取分区近期投稿列表
+
+#     参数说明：
+#     ----------
+#     rid : int
+#         分区 ID（非必须，但一般需要）。如 21 表示 "生活-日常"
+#     pn : int
+#         页码（默认 1）
+#     ps : int
+#         每页返回的视频数（默认 5，最大 50）
+
+#     返回值：
+#     ----------
+#     - pandas.DataFrame （默认）
+#     - dict 原始 JSON（如果 return_df=False）
+#     - None 请求失败或无数据
+#     """
+
+#     # =====================================
+#     # Step 1: 构造请求 URL 和参数
+#     # =====================================
+#     url = "https://api.bilibili.com/x/web-interface/newlist"
+#     params = {
+#         "rid": rid,    # 分区 ID（如果需要）
+#         "pn": pn,      # 当前页码
+#         "ps": ps,      # 每页返回的视频数
+#         "type": 0  # 类型参数（保留默认0）
+#     }
+
+#     # =====================================
+#     # Step 2: 伪装请求头（防止 412 拦截）
+#     # =====================================
+#     headers = {
+#         "User-Agent": (
+#             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+#             "AppleWebKit/537.36 (KHTML, like Gecko) "
+#             "Chrome/114.0.0.0 Safari/537.36"
+#         ),
+#         "Referer": "https://www.bilibili.com",
+#         "Origin": "https://www.bilibili.com",
+#         "Accept": "application/json"
+#     }
+
+#     # =====================================
+#     # Step 3: 发送 GET 请求
+#     # =====================================
+#     try:
+#         response = requests.get(url, params=params, headers=headers, timeout=10)
+#         response.raise_for_status()  # 抛出 HTTPError（非200响应）
+#         data = response.json()       # 解析 JSON 响应
+#     except requests.RequestException as e:
+#         print(f"❌ 请求失败: {e}")
+#         return None
+
+#     # =====================================
+#     # Step 4: 检查 API 返回状态
+#     # =====================================
+#     if data.get("code") != 0:
+#         print(f"⚠️ API 返回错误: code={data.get('code')} message={data.get('message')}")
+#         return None
+
+#     # 提取视频数据（同 dynamic/region 的 archives）
+#     archives = data.get("data", {}).get("archives", [])
+#     if not archives:
+#         print("📭 当前页无视频数据")
+#         return None
+
+#     # =====================================
+#     # Step 5: 格式化为 DataFrame
+#     # =====================================
+#     df = pd.DataFrame([{
+#         "BVID": v.get("bvid"),
+#         "标题": v.get("title"),
+#         "UP主": v.get("owner", {}).get("name"),
+#         "UP主ID": v.get("owner", {}).get("mid"),
+#         "发布时间戳": int(v.get("pubdate")),
+#         "播放数": v.get("stat", {}).get("view"),
+#         "点赞数": v.get("stat", {}).get("like"),
+#         "评论数": v.get("stat", {}).get("reply"),
+#         "弹幕数": v.get("stat", {}).get("danmaku"),
+#         "收藏数": v.get("stat", {}).get("favorite"),
+#         "投币数": v.get("stat", {}).get("coin"),
+#         "分享数": v.get("stat", {}).get("share"),
+#         "简介": v.get("desc"),
+#         "封面": v.get("pic"),
+#         "时长": v.get("duration"),
+#         "标签": v.get("tag"),
+#         "分区ID": rid,
+#         "视频链接": f"https://www.bilibili.com/video/{v.get('bvid')}",
+#         "获取时间戳": int(datetime.now().timestamp())
+#     } for v in archives])
+#     return df
+
+# 定义 User-Agent 列表（可扩充）
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15",
+    "Mozilla/5.0 (Windows NT 10.0; WOW64) Gecko/20100101 Firefox/91.0",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/104.0.0.0 Safari/537.36"
+]
+
+def get_bilibili_newlist(rid, pn=1, ps=5):
     """
-    调用 Bilibili API 获取分区近期投稿列表
+    获取 Bilibili 指定分区最新投稿视频列表（带反爬虫机制）
 
-    参数说明：
-    ----------
-    rid : int
-        分区 ID（非必须，但一般需要）。如 21 表示 "生活-日常"
-    pn : int
-        页码（默认 1）
-    ps : int
-        每页返回的视频数（默认 5，最大 50）
+    参数：
+        rid: int - 分区 ID（如 21 表示“生活-日常”）
+        pn: int - 页码（默认 1）
+        ps: int - 每页视频数（最大 50）
 
-    返回值：
-    ----------
-    - pandas.DataFrame （默认）
-    - dict 原始 JSON（如果 return_df=False）
-    - None 请求失败或无数据
+    返回：
+        pandas.DataFrame 或 None
     """
-
-    # =====================================
-    # Step 1: 构造请求 URL 和参数
-    # =====================================
+    # Step 1: 请求基本参数
     url = "https://api.bilibili.com/x/web-interface/newlist"
-    params = {
-        "rid": rid,    # 分区 ID（如果需要）
-        "pn": pn,      # 当前页码
-        "ps": ps,      # 每页返回的视频数
-        "type": 0  # 类型参数（保留默认0）
-    }
+    params = {"rid": rid, "pn": pn, "ps": ps, "type": 0}
 
-    # =====================================
-    # Step 2: 伪装请求头（防止 412 拦截）
-    # =====================================
-    headers = {
-        "User-Agent": (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/114.0.0.0 Safari/537.36"
-        ),
-        "Referer": "https://www.bilibili.com",
-        "Origin": "https://www.bilibili.com",
-        "Accept": "application/json"
-    }
+    # Step 2: 重试设置（带指数退避）
+    max_retries = 3
+    wait_time = 1
+    max_wait = 10
+    data = None
 
-    # =====================================
-    # Step 3: 发送 GET 请求
-    # =====================================
-    try:
-        response = requests.get(url, params=params, headers=headers, timeout=10)
-        response.raise_for_status()  # 抛出 HTTPError（非200响应）
-        data = response.json()       # 解析 JSON 响应
-    except requests.RequestException as e:
-        print(f"❌ 请求失败: {e}")
+    for attempt in range(1, max_retries + 1):
+        # Step 3: 伪装请求头
+        headers = {
+            "User-Agent": random.choice(USER_AGENTS),
+            "Referer": "https://www.bilibili.com",
+            "Origin": "https://www.bilibili.com",
+            "Accept": "application/json"
+        }
+
+        # Step 4: 每次请求前随机等待 0.5 - 2.5 秒
+        time.sleep(random.uniform(0.5, 2.5))
+
+        try:
+            response = requests.get(url, params=params, headers=headers, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+            break  # 请求成功，跳出重试循环
+        except requests.exceptions.Timeout:
+            if attempt < max_retries:
+                sleep_sec = min(wait_time, max_wait)
+                print(f"⚠️ 请求超时，第 {attempt} 次，等待 {sleep_sec}s 后重试...")
+                time.sleep(sleep_sec)
+                wait_time *= 2  # 指数退避
+            else:
+                print("❌ 请求超时，已放弃")
+                return None
+        except requests.RequestException as e:
+            print(f"❌ 请求失败: {e}")
+            return None
+
+    # Step 5: 响应校验
+    if data is None or data.get("code") != 0:
+        err_code = data.get("code") if data else "None"
+        err_msg = data.get("message") if data else "No response"
+        print(f"⚠️ API 返回错误: code={err_code} message={err_msg}")
         return None
 
-    # =====================================
-    # Step 4: 检查 API 返回状态
-    # =====================================
-    if data.get("code") != 0:
-        print(f"⚠️ API 返回错误: code={data.get('code')} message={data.get('message')}")
-        return None
-
-    # 提取视频数据（同 dynamic/region 的 archives）
+    # Step 6: 提取视频数据并转换为 DataFrame
     archives = data.get("data", {}).get("archives", [])
     if not archives:
-        print("📭 当前页无视频数据")
+        print("📭 当前页无数据")
         return None
 
-    # =====================================
-    # Step 5: 格式化为 DataFrame
-    # =====================================
     df = pd.DataFrame([{
         "BVID": v.get("bvid"),
         "标题": v.get("title"),
@@ -248,6 +344,7 @@ def get_bilibili_newlist(
         "视频链接": f"https://www.bilibili.com/video/{v.get('bvid')}",
         "获取时间戳": int(datetime.now().timestamp())
     } for v in archives])
+
     return df
 
 # 获取视频的时间类型（1天、3天、1周、1月、3月、1年）
