@@ -25,35 +25,31 @@ OUTDIR="video_stats_output"
 mkdir -p "$OUTDIR"
 
 # 本日
-python3 "$SCRIPT" "$DB_PATH" \
+python3 "$SCRIPT" "$DB_PATH" "$OUTDIR/today.xlsx" \
   --start "$TODAY_START" \
   --sort_by view \
   --desc \
-  --topN 100 \
-  --output "$OUTDIR/today.xlsx"
+  --topN 100
 
 # 本周
-python3 "$SCRIPT" "$DB_PATH" \
+python3 "$SCRIPT" "$DB_PATH" "$OUTDIR/week.xlsx" \
   --start "$WEEK_START" \
   --sort_by view \
   --desc \
-  --topN 100 \
-  --output "$OUTDIR/week.xlsx"
+  --topN 500
 
 # 本月
-python3 "$SCRIPT" "$DB_PATH" \
+python3 "$SCRIPT" "$DB_PATH" "$OUTDIR/month.xlsx" \
   --start "$MONTH_START" \
   --sort_by view \
   --desc \
-  --topN 100 \
-  --output "$OUTDIR/month.xlsx"
+  --topN 1000
 
 # 本年
-python3 "$SCRIPT" "$DB_PATH" \
+python3 "$SCRIPT" "$DB_PATH" "$OUTDIR/year.xlsx" \
   --start "$YEAR_START" \
   --sort_by view \
   --desc \
-  --topN 100 \
-  --output "$OUTDIR/year.xlsx"
+  --topN 5000
 
 echo "✅ 所有统计已完成，文件保存在 $OUTDIR/ 目录下"

@@ -4,8 +4,8 @@
 Author       : luyz
 Date         : 2025-07-26 22:52:28
 LastEditors  : luyz
-LastEditTime : 2025-07-29 21:08:23
-Description  : 
+LastEditTime : 2025-07-30 09:22:06
+Description  : 爬取 Bilibili 视频详细信息并保存到 SQLite 数据库
 Copyright (c) 2025 by LuYanzhuan lyanzhuan@gmail.com, All Rights Reserved.
 '''
 
@@ -264,7 +264,8 @@ def get_up_followers(up_id):
             "User-Agent": random.choice(USER_AGENTS),
             "Referer": "https://www.bilibili.com",
             "Origin": "https://www.bilibili.com",
-            "Accept": "application/json"
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Language": "zh-CN,zh;q=0.9"
         }
 
         try:
@@ -377,7 +378,7 @@ def save_video_type_to_db(video_data, db_path):
                     video['播放数'], video['点赞数'], video['评论数'], video['弹幕数'],
                     video['收藏数'], video['投币数'], video['分享数'], video['简介'], 
                     video['封面'], video['时长'], video['标签'], video['视频链接'],
-                    video['获取时间戳'], video['分区ID'], video_type,
+                    video['获取时间戳'], video['分区ID'], video_type, followers_count
                 ))
         except Exception as e:
             print(f"❌ 插入数据时出错: {e}")
