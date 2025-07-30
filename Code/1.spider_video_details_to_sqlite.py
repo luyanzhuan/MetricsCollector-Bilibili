@@ -366,8 +366,6 @@ def save_video_type_to_db(video_data, db_path):
         try:
             video_type = get_video_type(video['发布时间戳'], video['获取时间戳'])
             followers_count = get_up_followers(video['UP主ID'])
-            # 控制抓取间隔
-            random_sleep(0.01, 0.2)
 
             if video_type:
                 cursor.execute('''
