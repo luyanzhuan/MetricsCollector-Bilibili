@@ -4,7 +4,7 @@
 Author       : luyz
 Date         : 2025-07-26 22:52:28
 LastEditors  : luyz
-LastEditTime : 2025-07-31 21:07:17
+LastEditTime : 2025-07-31 23:41:08
 Description  : 爬取 Bilibili 视频详细信息并保存到 SQLite 数据库
 Copyright (c) 2025 by LuYanzhuan lyanzhuan@gmail.com, All Rights Reserved.
 '''
@@ -27,6 +27,11 @@ def init_video_db(db_path):
     如果数据库文件不存在，则创建新的 SQLite 数据库
     如果数据库文件存在，则检查是否有必要更新表结构
     """
+    # 获取数据库文件所在的目录
+    db_dir = os.path.dirname(db_path)
+
+    # 创建文件夹（如果不存在）
+    os.makedirs(db_dir, exist_ok=True)
 
     create_table_sql = '''
         CREATE TABLE videos (
@@ -90,6 +95,12 @@ def init_video_type_db(db_path):
     如果数据库文件不存在，则创建新的 SQLite 数据库
     如果数据库文件存在，则检查是否有必要更新表结构
     """
+    # 获取数据库文件所在的目录
+    db_dir = os.path.dirname(db_path)
+
+    # 创建文件夹（如果不存在）
+    os.makedirs(db_dir, exist_ok=True)
+
     create_table_sql = '''
         CREATE TABLE video_types (
             bvid TEXT,
@@ -442,23 +453,24 @@ def continuously_spider_video_data(region_id, video_details_db, video_details_wi
         except Exception as e:
             print(f"❌ 抓取数据时出错: {e}")
 
-        # 检查是否达到截止日期
-        current_max_pub_timestamp = video_data['发布时间戳'].max() if not video_data.empty else 0
-        if current_max_pub_timestamp < end_date.timestamp():
-            print(f"📅 当前最大发布时间戳: {current_max_pub_timestamp} ({datetime.fromtimestamp(current_max_pub_timestamp)})")
-            print(f"📅 截止日期: {end_date.timestamp()} ({end_date})")
-            print(f"⏹ 已达到截止日期 {end_date.strftime('%Y-%m-%d')}，停止抓取")
-            break
+        if video_data is not None and not video_data.empty:
+            # 检查是否达到截止日期
+            current_max_pub_timestamp = video_data['发布时间戳'].max() if not video_data.empty else 0
+            if current_max_pub_timestamp < end_date.timestamp():
+                print(f"📅 当前最大发布时间戳: {current_max_pub_timestamp} ({datetime.fromtimestamp(current_max_pub_timestamp)})")
+                print(f"📅 截止日期: {end_date.timestamp()} ({end_date})")
+                print(f"⏹ 已达到截止日期 {end_date.strftime('%Y-%m-%d')}，停止抓取")
+                break
 
-        # 检查是否达到最大页数限制
-        if max_pages and page >= max_pages:
-            print(f"⏹ 已达到最大页数限制 {max_pages}")
-            break
+            # 检查是否达到最大页数限制
+            if max_pages and page >= max_pages:
+                print(f"⏹ 已达到最大页数限制 {max_pages}")
+                break
 
-        # 控制抓取间隔
-        random_sleep(0.01, 0.5)
-        print(f"⏳ 等待 {interval} 秒后抓取下一页...")
-        time.sleep(interval)
+            # 控制抓取间隔
+            random_sleep(0.01, 0.5)
+            print(f"⏳ 等待 {interval} 秒后抓取下一页...")
+            time.sleep(interval)
         page += 1
 
 if __name__ == "__main__":

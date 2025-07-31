@@ -1,11 +1,16 @@
 #!/bin/bash
 
-# 获取当前脚本所在的目录（支持软链接和相对路径）
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# 检查是否传入了配置文件路径作为参数
+if [ $# -lt 1 ]; then
+    echo "❌ 使用方式: $0 <配置文件路径>"
+    exit 1
+fi
 
-# 构建配置文件路径：脚本同级目录的 Config/Example/201/config.conf
-# 这里假设配置文件位于脚本目录下的，你需要根据实际情况调整路径或者参数信息
-CONFIG_FILE="${SCRIPT_DIR}/Config/Example/201/config.conf"
+# 从参数中获取配置文件路径（支持相对路径）
+CONFIG_FILE="$1"
+
+# 若是相对路径，转换为绝对路径
+CONFIG_FILE="$(realpath "$CONFIG_FILE")"
 
 # 检查配置文件是否存在
 if [ ! -f "$CONFIG_FILE" ]; then
@@ -172,7 +177,7 @@ while true; do
     --type_filter "1_day" \
     --sort_by view \
     --desc \
-    --topN 100
+    --topN 1000
   # 将 Excel 写入飞书表格
   python3 "$SCRIPT_WRITE_FEISHU" \
     --excel_path "$OUTDIR_EXCEL/1_Day.xlsx" \
@@ -188,7 +193,7 @@ while true; do
     --type_filter "3_day" \
     --sort_by view \
     --desc \
-    --topN 100
+    --topN 1000
   # 将 Excel 写入飞书表格
   python3 "$SCRIPT_WRITE_FEISHU" \
     --excel_path "$OUTDIR_EXCEL/3_Day.xlsx" \
@@ -204,7 +209,7 @@ while true; do
     --type_filter "7_day" \
     --sort_by view \
     --desc \
-    --topN 100
+    --topN 1000
   # 将 Excel 写入飞书表格
   python3 "$SCRIPT_WRITE_FEISHU" \
     --excel_path "$OUTDIR_EXCEL/7_Day.xlsx" \
@@ -220,7 +225,7 @@ while true; do
     --type_filter "30_day" \
     --sort_by view \
     --desc \
-    --topN 100
+    --topN 1000
   # 将 Excel 写入飞书表格
   python3 "$SCRIPT_WRITE_FEISHU" \
     --excel_path "$OUTDIR_EXCEL/30_Day.xlsx" \
@@ -236,7 +241,7 @@ while true; do
     --type_filter "90_day" \
     --sort_by view \
     --desc \
-    --topN 100
+    --topN 1000
   # 将 Excel 写入飞书表格
   python3 "$SCRIPT_WRITE_FEISHU" \
     --excel_path "$OUTDIR_EXCEL/90_Day.xlsx" \
@@ -252,7 +257,7 @@ while true; do
     --type_filter "360_day" \
     --sort_by view \
     --desc \
-    --topN 100
+    --topN 1000
   # 将 Excel 写入飞书表格
   python3 "$SCRIPT_WRITE_FEISHU" \
     --excel_path "$OUTDIR_EXCEL/360_Day.xlsx" \
@@ -266,6 +271,6 @@ while true; do
 
   echo "[$(date '+%F %T')] Task finished. Sleeping for 10 minute..." >> "$FILE_LOG"
 
-  # 休息10分钟（60秒）
-  sleep 60
+  # 休息10分钟（600秒）
+  sleep 600
 done

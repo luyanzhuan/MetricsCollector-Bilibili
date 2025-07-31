@@ -3,9 +3,9 @@
 # 获取当前脚本所在的目录（支持软链接和相对路径）
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# 构建配置文件路径：脚本同级目录的 Config/Example/config.conf
+# 构建配置文件路径：脚本同级目录的 Config/Example/201/config.conf
 # 这里假设配置文件位于脚本目录下的，你需要根据实际情况调整路径或者参数信息
-CONFIG_FILE="${SCRIPT_DIR}/Config/Example/config.conf"
+CONFIG_FILE="${SCRIPT_DIR}/Config/Example/201/config.conf"
 
 # 检查配置文件是否存在
 if [ ! -f "$CONFIG_FILE" ]; then
