@@ -24,6 +24,7 @@ source "$CONFIG_FILE"
 # 打印加载的参数（可选）
 echo "✅ 已加载配置文件: $CONFIG_FILE"
 echo "项目目录：$project_dir"
+echo "结果目录：$result_dir"
 echo "日志目录：$log_dir"
 echo "分区ID：$region_id"
 echo "App ID：$app_id"
@@ -36,12 +37,12 @@ echo "Sheet ID(30 Day)：$sheet_id_30_day"
 echo "Sheet ID(90 Day)：$sheet_id_90_day"
 echo "Sheet ID(360 Day)：$sheet_id_360_day"
 
-DB_WITH_TYPE_PATH="$project_dir/Data/Sqlite/$region_id/video_details_with_type.db"
+DB_WITH_TYPE_PATH="$result_dir/Sqlite/$region_id/video_details_with_type.db"
 SCRIPT_WRITE_FEISHU="$project_dir/Code/3.write_excel_to_feishu.py"
 SCRIPT_GET_TYPE_DATA="$project_dir/Code/4.get_video_type_data.py"
 
 # 输出目录
-OUTDIR_EXCEL="$project_dir/Data/Excel"
+OUTDIR_EXCEL="$result_dir/Excel"
 mkdir -p "$OUTDIR_EXCEL"
 
 # 1天

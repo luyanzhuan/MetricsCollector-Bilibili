@@ -24,6 +24,7 @@ source "$CONFIG_FILE"
 # 打印加载的参数（可选）
 echo "✅ 已加载配置文件: $CONFIG_FILE"
 echo "项目目录：$project_dir"
+echo "结果目录：$result_dir"
 echo "日志目录：$log_dir"
 echo "分区ID：$region_id"
 echo "App ID：$app_id"
@@ -34,7 +35,7 @@ echo "Sheet ID(Week)：$sheet_id_week"
 echo "Sheet ID(Month)：$sheet_id_month"
 echo "Sheet ID(Year)：$sheet_id_year"
 
-DB_PATH="$project_dir/Data/Sqlite/$region_id/video_details.db"
+DB_PATH="$result_dir/Sqlite/$region_id/video_details.db"
 SCRIPT_GET_DATA="$project_dir/Code/2.get_video_data.py"
 SCRIPT_WRITE_FEISHU="$project_dir/Code/3.write_excel_to_feishu.py"
 
@@ -45,7 +46,7 @@ MONTH_START=$(date +%Y-%m-01)
 YEAR_START=$(date +%Y-01-01)
 
 # 输出目录
-OUTDIR="$project_dir/Data/Excel"
+OUTDIR="$result_dir/Excel"
 mkdir -p "$OUTDIR"
 
 # 本日

@@ -19,6 +19,7 @@ source "$CONFIG_FILE"
 # 打印加载的参数（可选）
 echo "✅ 已加载配置文件: $CONFIG_FILE"
 echo "项目目录：$project_dir"
+echo "结果目录：$result_dir"
 echo "日志目录：$log_dir"
 echo "分区ID：$region_id"
 echo "最大页数：$max_pages"
@@ -35,8 +36,8 @@ flock -n 200 || { echo "[$(date '+%F %T')] Another instance is running. Exit." ;
 mkdir -p "$log_dir"
 
 # 数据库路径
-DB_PATH="$project_dir/Data/Sqlite/$region_id/video_details.db"
-DB_WITH_TYPE_PATH="$project_dir/Data/Sqlite/$region_id/video_details_with_type.db"
+DB_PATH="$result_dir/Sqlite/$region_id/video_details.db"
+DB_WITH_TYPE_PATH="$result_dir/Sqlite/$region_id/video_details_with_type.db"
 # 脚本路径
 SCRIPT_SPIDER_SQLITE="$project_dir/Code/1.spider_video_details_to_sqlite.py"
 
