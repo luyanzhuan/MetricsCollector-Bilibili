@@ -34,30 +34,42 @@ flock -n 200 || { echo "[$(date '+%F %T')] Another instance is running. Exit." ;
 # 设置日志目录
 mkdir -p "$log_dir"
 
-# 设置任务脚本路径
-python_script="$project_dir/Code/1.spider_video_details_to_sqlite.py"
+# 数据库路径
+DB_PATH="$project_dir/Data/Sqlite/$region_id/video_details.db"
+DB_WITH_TYPE_PATH="$project_dir/Data/Sqlite/$region_id/video_details_with_type.db"
+# 脚本路径
+SCRIPT_SPIDER_SQLITE="$project_dir/Code/1.spider_video_details_to_sqlite.py"
 
 # 无限循环：每轮运行任务 + 休息10分钟
 while true; do
-  # 生成 end_date（去年今天的前一个月）
-  end_date=$(date -d "$(date -d '1 year ago' +%Y-%m-%d) -1 month" +%Y-%m-%d)
+  # 获取当前小时（24小时制）
+  current_hour=$(date +%H)
+
+  if [ "$current_hour" -lt 8 ]; then
+    # 如果是 0 点到 8 点之间，end_date 为去年今天的前一个月
+    end_date=$(date -d "$(date -d '1 year ago' +%Y-%m-%d) -1 month" +%Y-%m-%d)
+  else
+    # 否则，end_date 为 5 天前
+    end_date=$(date -d '5 days ago' +%Y-%m-%d)
+  fi
 
   # 生成日志文件名
-  timestamp=$(date '+%Y%m%d_%H%M%S')
-  log_file="$log_dir/${timestamp}.log"
+  TIME_STAMP=$(date '+%Y%m%d_%H%M%S')
+  FILE_LOG="$log_dir/${TIME_STAMP}.log"
 
-  echo "[$(date '+%F %T')] Starting new round. end_date=${end_date}" | tee "$log_file"
+  echo "[$(date '+%F %T')] Starting new round. end_date=${end_date}" | tee "$FILE_LOG"
 
+  # =================== 1. 抓取视频数据并存入 SQLite 数据库 ===================
   # 执行 Python 脚本并输出日志
-  python "$python_script" $region_id \
-    --video_details_db "$project_dir/Data/Sqlite/$region_id/video_details.db" \
-    --video_details_with_type_db "$project_dir/Data/Sqlite/$region_id/video_details_with_type.db" \
+  python "$SCRIPT_SPIDER_SQLITE" $region_id \
+    --video_details_db "$DB_PATH" \
+    --video_details_with_type_db "$DB_WITH_TYPE_PATH" \
     --max_pages $max_pages \
     --interval $interval \
     --end_date "$end_date" \
-    >> "$log_file" 2>&1
+    >> "$FILE_LOG" 2>&1
 
-  echo "[$(date '+%F %T')] Task finished. Sleeping for 10 minutes..." >> "$log_file"
+  echo "[$(date '+%F %T')] Task finished. Sleeping for 10 minute..." >> "$FILE_LOG"
 
   # 休息10分钟（600秒）
   sleep 600

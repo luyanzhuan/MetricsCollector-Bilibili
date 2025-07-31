@@ -4,7 +4,7 @@
 Author       : luyz
 Date         : 2025-07-26 22:52:28
 LastEditors  : luyz
-LastEditTime : 2025-07-30 10:24:45
+LastEditTime : 2025-07-31 21:07:17
 Description  : 爬取 Bilibili 视频详细信息并保存到 SQLite 数据库
 Copyright (c) 2025 by LuYanzhuan lyanzhuan@gmail.com, All Rights Reserved.
 '''
@@ -147,7 +147,7 @@ def init_video_type_db(db_path):
 # 随机等待函数，防止请求过于频繁导致被封
 def random_sleep(min_seconds=1, max_seconds=3):
     delay = random.uniform(min_seconds, max_seconds)
-    print(f"⏳ 等待 {delay:.2f} 秒防封...")
+    # print(f"⏳ 等待 {delay:.2f} 秒防封...")
     time.sleep(delay)
 
 # 定义 User-Agent 列表（可扩充）
@@ -296,7 +296,7 @@ def get_up_followers(up_id):
     # Step 6: 提取视频数据并转换为 DataFrame
     if 'data' in data and 'follower' in data['data']:
         followers_count = data['data']['follower']
-        print(f"📊 UP主 {up_id} 的粉丝数: {followers_count}")
+        # print(f"📊 UP主 {up_id} 的粉丝数: {followers_count}")
     else:
         print("📭 未获取到粉丝数")
         return None
@@ -369,7 +369,7 @@ def save_video_type_to_db(video_data, db_path):
 
             if video_type:
                 followers_count = get_up_followers(video['UP主ID'])
-                random_sleep(0.01, 0.5)
+                random_sleep(0.01, 0.2)
                 cursor.execute('''
                     INSERT OR REPLACE INTO video_types (
                         bvid, title, up_name, up_id, pub_timestamp, view, like, reply, danmaku, 
