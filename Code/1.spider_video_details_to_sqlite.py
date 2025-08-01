@@ -4,7 +4,7 @@
 Author       : luyz
 Date         : 2025-07-26 22:52:28
 LastEditors  : luyz
-LastEditTime : 2025-07-31 23:41:08
+LastEditTime : 2025-08-01 22:08:14
 Description  : 爬取 Bilibili 视频详细信息并保存到 SQLite 数据库
 Copyright (c) 2025 by LuYanzhuan lyanzhuan@gmail.com, All Rights Reserved.
 '''
@@ -441,6 +441,12 @@ def continuously_spider_video_data(region_id, video_details_db, video_details_wi
 
     # 循环获取视频数据
     page = 1
+    cutoff_timestamp = end_date.timestamp()
+    stagnant_count = 0
+    max_stagnant = 3
+    skip_step = 2
+    last_oldest_time = float('inf')
+
     while True:
         print(f"📥 正在抓取第 {page} 页的视频数据...")
         try:
@@ -461,6 +467,23 @@ def continuously_spider_video_data(region_id, video_details_db, video_details_wi
                 print(f"📅 截止日期: {end_date.timestamp()} ({end_date})")
                 print(f"⏹ 已达到截止日期 {end_date.strftime('%Y-%m-%d')}，停止抓取")
                 break
+
+            # 检查是否卡页
+            current_min_pub_timestamp = video_data['发布时间戳'].min() if not video_data.empty else 0
+            if current_min_pub_timestamp > last_oldest_time:
+                stagnant_count += 1
+            else:
+                stagnant_count = 0
+            if last_oldest_time != float('inf'):
+                print(f"📅 上一次最晚时间戳：{last_oldest_time} ({datetime.fromtimestamp(last_oldest_time)})")
+            last_oldest_time = current_min_pub_timestamp
+            if stagnant_count >= max_stagnant:
+                print(f"📅 当前最小发布时间戳：{current_min_pub_timestamp} ({datetime.fromtimestamp(current_min_pub_timestamp)})")
+                print(f"⚠️ 检测到卡页，尝试跳过 {skip_step} 页...")
+                page += skip_step
+                skip_step += 2
+                stagnant_count = 0
+                continue
 
             # 检查是否达到最大页数限制
             if max_pages and page >= max_pages:
