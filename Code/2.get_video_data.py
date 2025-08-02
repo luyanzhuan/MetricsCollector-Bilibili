@@ -4,7 +4,7 @@
 Author       : luyz
 Date         : 2025-07-26 21:39:40
 LastEditors  : luyz
-LastEditTime : 2025-07-30 00:01:40
+LastEditTime : 2025-08-02 21:03:26
 Description  : 读取 SQLite 数据库文件并统计指定时间范围内的视频信息
 Copyright (c) 2025 by LuYanzhuan lyanzhuan@gmail.com, All Rights Reserved.
 '''
@@ -160,7 +160,7 @@ def format_output(df, output_path="result.xlsx"):
         sorted_columns = [
             "视频ID", "标题", "时长", "频道名称", "发布时间", "播放数", "点赞数",
             "评论数", "弹幕数", "收藏数", "投币数", "分享数", "简介", "视频链接", "封面",
-            "标签", "视频ID", "分区ID", "频道ID", "采集时间"
+            "标签", "分区ID", "频道ID", "采集时间"
         ]
         df = df[sorted_columns]
         
