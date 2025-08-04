@@ -101,9 +101,16 @@ while true; do
   # =================== 2. 获取热门视频数据并写入 Excel 和飞书表格 ===================
   # 获取日期边界
   TODAY_START=$(date +%F)
-  WEEK_START=$(date -d "$TODAY_START -$(($(date +%u)-1)) days" +%F)
-  MONTH_START=$(date +%Y-%m-01)
-  YEAR_START=$(date +%Y-01-01)
+  # WEEK_START=$(date -d "$TODAY_START -$(($(date +%u)-1)) days" +%F)
+  # MONTH_START=$(date +%Y-%m-01)
+  # YEAR_START=$(date +%Y-01-01)
+  # 获取 7 天前的日期
+  WEEK_START=$(date -d "$TODAY_START -7 days" +%F)
+  # 获取 30 天前的日期
+  MONTH_START=$(date -d "$TODAY_START -30 days" +%F)
+  # 获取 1 年前的日期
+  YEAR_START=$(date -d "$TODAY_START -365 days" +%F)
+
   # 2.1 每日热门
   # 从数据库获取数据并保存为 Excel
   python3 "$SCRIPT_GET_DATA" "$DB_PATH" "$OUTDIR_EXCEL/Today.xlsx" \
