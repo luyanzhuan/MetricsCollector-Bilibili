@@ -100,15 +100,17 @@ while true; do
 
   # =================== 2. 获取热门视频数据并写入 Excel 和飞书表格 ===================
   # 获取日期边界
-  TODAY_START=$(date +%F)
+  # TODAY_START=$(date +%F)
   # WEEK_START=$(date -d "$TODAY_START -$(($(date +%u)-1)) days" +%F)
   # MONTH_START=$(date +%Y-%m-01)
   # YEAR_START=$(date +%Y-01-01)
-  # 获取 7 天前的日期
+  # 获取昨天的日期（最近1天）
+  TODAY_START=$(date -d "yesterday" +%F)
+  # 获取 7 天前的日期（最近1周）
   WEEK_START=$(date -d "$TODAY_START -7 days" +%F)
-  # 获取 30 天前的日期
+  # 获取 30 天前的日期（最近1月）
   MONTH_START=$(date -d "$TODAY_START -30 days" +%F)
-  # 获取 1 年前的日期
+  # 获取 1 年前的日期（最近1年）
   YEAR_START=$(date -d "$TODAY_START -365 days" +%F)
 
   # 2.1 每日热门
