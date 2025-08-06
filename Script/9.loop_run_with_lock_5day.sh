@@ -65,12 +65,12 @@ mkdir -p "$OUTDIR_EXCEL"
 # 无限循环：每轮运行任务 + 休息10分钟
 while true; do
 
-  # end_date 为 1个月前
-  end_date=$(date -d '1 month ago' +%Y-%m-%d)
+  # end_date 为 5天 前
+  end_date=$(date -d '5 days ago' +%F)
 
   # 生成日志文件名
   TIME_STAMP=$(date '+%Y%m%d_%H%M%S')
-  FILE_LOG="$log_dir/$region_id/${TIME_STAMP}_1month.log"
+  FILE_LOG="$log_dir/$region_id/${TIME_STAMP}_5day.log"
 
   echo "[$(date '+%F %T')] Starting new round. end_date=${end_date}" | tee "$FILE_LOG"
 
@@ -266,6 +266,6 @@ while true; do
 
   echo "[$(date '+%F %T')] Task finished. Sleeping for 10 minute..." >> "$FILE_LOG"
 
-  # 休息10分钟（600秒）
-  sleep 600
+  # 休息30分钟（1800秒）
+  sleep 1800
 done

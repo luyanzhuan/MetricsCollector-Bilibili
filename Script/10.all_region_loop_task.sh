@@ -37,9 +37,9 @@ for dir in "${CONFIG_DIR}"/*; do
     fi
 
     mkdir -p "$log_dir/$REGION_ID"
-    # 启动1个月任务
-    nohup $project_dir/Script/9.loop_run_with_lock_1month.sh "$CURRENT_REGION_CONFIG_FILE" > "$log_dir/$REGION_ID/loop_runner_stdout_1month.log" 2>&1 &
-    echo "✅ 启动分区 $REGION_ID 的任务，日志输出到 $log_dir/$REGION_ID/loop_runner_stdout_1month.log"
+    # 启动5天任务
+    nohup $project_dir/Script/9.loop_run_with_lock_5day.sh "$CURRENT_REGION_CONFIG_FILE" > "$log_dir/$REGION_ID/loop_runner_stdout_5day.log" 2>&1 &
+    echo "✅ 启动分区 $REGION_ID 的任务，日志输出到 $log_dir/$REGION_ID/loop_runner_stdout_5day.log"
     sleep 10
     # 启动1年任务
     nohup $project_dir/Script/9.loop_run_with_lock_1year.sh "$CURRENT_REGION_CONFIG_FILE" > "$log_dir/$REGION_ID/loop_runner_stdout_1year.log" 2>&1 &
